@@ -4,26 +4,29 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       {/* Hero */}
-      <section className="max-w-6xl mx-auto px-6 pt-20 pb-16 md:pt-32 md:pb-24">
-        <div className="inline-flex items-center gap-3 mb-8">
+      <section className="max-w-6xl mx-auto px-6 pt-20 pb-16 md:pt-32 md:pb-24 text-center">
+        <div className="flex items-center justify-center gap-3 mb-8">
           <span className="w-8 h-px bg-terracotta" />
           <span className="text-xs uppercase tracking-[0.2em] text-terracotta font-mono">
             Tillgänglighetsskanner · Gratis
           </span>
+          <span className="w-8 h-px bg-terracotta" />
         </div>
 
-        <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-medium leading-[0.95] tracking-tightest mb-8 max-w-4xl">
+        <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-medium leading-[0.95] tracking-tightest mb-8 max-w-4xl mx-auto">
           Är din webbplats{" "}
           <em className="text-forest font-normal">tillgänglig</em> för{" "}
           <span className="italic text-terracotta font-normal">alla</span>?
         </h1>
 
-        <p className="text-lg md:text-xl text-ink-soft max-w-2xl leading-relaxed mb-12 border-l-2 border-gold pl-6">
+        <p className="text-lg md:text-xl text-ink-soft max-w-2xl mx-auto leading-relaxed mb-12">
           Skanna din sajt och se var du står mot WCAG 2.1 AA och EU:s
           tillgänglighetsdirektiv (EAA). Gratis, på sekunder, på svenska.
         </p>
 
-        <ScanForm />
+        <div className="flex justify-center">
+          <ScanForm />
+        </div>
 
         <p className="mt-6 text-sm text-ink-mute">
           Inga konton. Ingen kreditkortsuppgift. Resultatet på 20 sekunder.
