@@ -35,7 +35,8 @@ export interface ScanResult {
   pageTitle: string | null;
 }
 
-const SCAN_TIMEOUT_MS = 30_000;
+const NAV_TIMEOUT_MS = 45_000;
+const NETWORK_IDLE_SETTLE_MS = 4_000;
 
 const DEVICE_PROFILES: Record<
   DeviceType,
@@ -91,10 +92,14 @@ export async function scanUrl(
     });
     const page = await context.newPage();
 
-    await page.goto(url, {
-      waitUntil: "networkidle",
-      timeout: SCAN_TIMEOUT_MS,
-    });
+    // Wait for the load event (predictable), then give the network a brief
+    // chance to settle. `networkidle` as the primary wait is brittle —
+    // chat widgets, heartbeats and analytics pings keep the network busy
+    // forever on many real sites, blowing the timeout.
+    await page.goto(url, { waitUntil: "load", timeout: NAV_TIMEOUT_MS });
+    await page
+      .waitForLoadState("networkidle", { timeout: NETWORK_IDLE_SETTLE_MS })
+      .catch(() => undefined);
 
     const pageTitle = await page.title().catch(() => null);
 
