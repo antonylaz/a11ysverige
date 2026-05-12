@@ -17,6 +17,16 @@ const IMPACT_ORDER: Array<NonNullable<AxeIssue["impact"]>> = [
   "minor",
 ];
 
+// Left-border colour per severity. Tailwind needs the full literal class
+// strings in source for the JIT compiler to include them, so they live as
+// values in this map.
+const SEVERITY_BORDER: Record<NonNullable<AxeIssue["impact"]>, string> = {
+  critical: "border-l-4 border-l-red-warn",
+  serious: "border-l-4 border-l-terracotta",
+  moderate: "border-l-4 border-l-gold",
+  minor: "border-l-4 border-l-ink-mute",
+};
+
 export function IssueList({ issues }: { issues: AxeIssue[] }) {
   // Group by impact then sort by canonical order
   const grouped = IMPACT_ORDER.map((impact) => ({
@@ -50,10 +60,11 @@ function IssueRow({ issue }: { issue: AxeIssue }) {
   const [open, setOpen] = useState(false);
   const copy = getIssueCopy(issue.id);
   const title = copy?.title ?? issue.help;
+  const severityBorder = SEVERITY_BORDER[issue.impact ?? "minor"];
 
   return (
     <details
-      className="bg-paper border border-line rounded group"
+      className={`bg-paper border border-line ${severityBorder} rounded group`}
       open={open}
       onToggle={(e) => setOpen((e.target as HTMLDetailsElement).open)}
     >

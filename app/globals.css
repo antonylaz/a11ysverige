@@ -224,10 +224,15 @@ html, body {
   display: grid;
   grid-template-columns: 56px 1fr;
   gap: 16px;
-  padding: 16px 0;
+  padding: 16px 0 16px 14px;
   border-bottom: 1px solid var(--line);
+  border-left: 4px solid var(--line);
   break-inside: avoid;
 }
+.report-issue--critical { border-left-color: var(--red-warn); }
+.report-issue--serious  { border-left-color: var(--terracotta); }
+.report-issue--moderate { border-left-color: var(--gold); }
+.report-issue--minor    { border-left-color: var(--ink-mute); }
 .report-issue-num {
   font-family: var(--font-jetbrains), monospace;
   font-size: 11pt;

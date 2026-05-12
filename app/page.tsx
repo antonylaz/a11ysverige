@@ -30,6 +30,9 @@ export default function Home() {
         </p>
       </section>
 
+      {/* Report preview */}
+      <ReportPreview />
+
       {/* How it works */}
       <section className="border-t border-line bg-paper">
         <div className="max-w-6xl mx-auto px-6 py-20">
@@ -116,6 +119,150 @@ function Step({ num, title, body }: { num: string; title: string; body: string }
       </div>
       <h3 className="font-display text-2xl font-medium mb-3">{title}</h3>
       <p className="text-ink-soft leading-relaxed">{body}</p>
+    </div>
+  );
+}
+
+// ---------- Report preview (inline mock, kept in sync with design tokens) ----------
+
+function ReportPreview() {
+  return (
+    <section className="border-t border-line bg-paper">
+      <div className="max-w-6xl mx-auto px-6 py-20 md:py-24">
+        <div className="text-xs uppercase tracking-[0.2em] text-ink-mute font-mono mb-3">
+          — Så ser rapporten ut
+        </div>
+        <h2 className="font-display text-3xl md:text-5xl font-medium tracking-tightest mb-4 max-w-3xl">
+          Konkreta problem. Tydlig prioritering.{" "}
+          <em className="italic text-forest font-normal">På svenska.</em>
+        </h2>
+        <p className="text-ink-soft max-w-2xl mb-12 leading-relaxed">
+          Varje problem förklaras för en utvecklare och en chef — vad det är,
+          vem det påverkar och hur du åtgärdar det. Med WCAG-referenser och
+          poäng som mäter framsteg.
+        </p>
+
+        {/* Mock report card */}
+        <div className="relative max-w-4xl">
+          <div className="absolute -top-3 left-6 z-10 bg-terracotta text-cream font-mono text-[10px] uppercase tracking-[0.15em] px-3 py-1 rounded">
+            Förhandsvisning
+          </div>
+
+          <div className="bg-cream border border-line rounded-lg p-6 md:p-10 shadow-[0_20px_60px_-20px_rgba(26,31,26,0.25)]">
+            {/* URL */}
+            <div className="text-[10px] uppercase tracking-[0.2em] text-ink-mute font-mono mb-2">
+              — Resultat för
+            </div>
+            <div className="font-display text-lg md:text-xl break-all mb-1">
+              https://dinwebbplats.se
+            </div>
+            <div className="text-sm text-ink-soft mb-6 italic">
+              Välkommen — Din Webbplats
+            </div>
+
+            {/* Score block */}
+            <div className="grid md:grid-cols-2 gap-6 items-center bg-paper border border-line rounded p-6 mb-8">
+              <div>
+                <div className="text-[10px] uppercase tracking-[0.2em] text-ink-mute font-mono mb-2">
+                  — Tillgänglighetspoäng
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <span className="font-display font-medium text-7xl md:text-8xl leading-none tracking-tightest text-gold">
+                    67
+                  </span>
+                  <span className="font-display text-2xl text-ink-mute">
+                    / 100
+                  </span>
+                </div>
+                <div className="mt-2 font-display italic text-lg text-gold">
+                  Behöver förbättringar
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <PreviewSeverity label="Kritiska" count={2} tone="critical" />
+                <PreviewSeverity label="Allvarliga" count={5} tone="serious" />
+                <PreviewSeverity label="Måttliga" count={8} tone="moderate" />
+                <PreviewSeverity label="Mindre" count={3} tone="minor" />
+              </div>
+            </div>
+
+            {/* Example issues with severity bars (the same bars now used live) */}
+            <div className="text-[10px] uppercase tracking-[0.2em] text-ink-mute font-mono mb-3">
+              — Problemexempel
+            </div>
+            <div className="space-y-2">
+              <PreviewIssue
+                impact="critical"
+                title="Otillräcklig kontrast mellan text och bakgrund"
+                count={4}
+              />
+              <PreviewIssue
+                impact="serious"
+                title="Bild saknar alt-text"
+                count={11}
+              />
+              <PreviewIssue
+                impact="moderate"
+                title="Sidan saknar <main>-landmark"
+                count={1}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const PREVIEW_TONES = {
+  critical: { dot: "bg-red-warn", border: "border-l-red-warn" },
+  serious: { dot: "bg-terracotta", border: "border-l-terracotta" },
+  moderate: { dot: "bg-gold", border: "border-l-gold" },
+  minor: { dot: "bg-ink-mute", border: "border-l-ink-mute" },
+} as const;
+
+function PreviewSeverity({
+  label,
+  count,
+  tone,
+}: {
+  label: string;
+  count: number;
+  tone: keyof typeof PREVIEW_TONES;
+}) {
+  return (
+    <div className="bg-cream border border-line rounded p-3">
+      <div className="flex items-center gap-2 mb-1">
+        <span className={`w-2 h-2 rounded-full ${PREVIEW_TONES[tone].dot}`} />
+        <span className="text-[10px] uppercase tracking-[0.1em] text-ink-soft font-semibold">
+          {label}
+        </span>
+      </div>
+      <div className="font-display text-2xl font-medium">{count}</div>
+    </div>
+  );
+}
+
+function PreviewIssue({
+  impact,
+  title,
+  count,
+}: {
+  impact: keyof typeof PREVIEW_TONES;
+  title: string;
+  count: number;
+}) {
+  return (
+    <div
+      className={`bg-paper border border-line border-l-4 ${PREVIEW_TONES[impact].border} rounded px-4 py-3 flex items-start justify-between gap-4`}
+    >
+      <div>
+        <div className="font-semibold text-ink text-sm">{title}</div>
+        <div className="text-xs text-ink-soft mt-0.5">
+          {count} {count === 1 ? "förekomst" : "förekomster"} på sidan
+        </div>
+      </div>
+      <span className="text-ink-mute shrink-0 mt-1">⌄</span>
     </div>
   );
 }

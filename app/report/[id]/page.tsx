@@ -173,7 +173,10 @@ export default async function ReportPage({
                 const copy = getIssueCopy(issue.id);
                 const title = copy?.title ?? issue.help;
                 return (
-                  <article key={issue.id} className="report-issue">
+                  <article
+                    key={issue.id}
+                    className={`report-issue report-issue--${issue.impact ?? "minor"}`}
+                  >
                     <div className="report-issue-num">
                       {String(idx + 1).padStart(2, "0")}
                     </div>
