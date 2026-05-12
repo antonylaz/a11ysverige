@@ -47,11 +47,12 @@ export async function POST(req: NextRequest) {
 
   // Run the scan
   try {
-    const result = await scanUrl(parsed.data.url);
+    const result = await scanUrl(parsed.data.url, parsed.data.device);
     const id = nanoid(10);
     await saveScan(id, result);
     return NextResponse.json({
       id,
+      device: result.device,
       score: result.score,
       totalIssues: result.totalIssues,
       byImpact: result.byImpact,

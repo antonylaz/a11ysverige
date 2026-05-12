@@ -45,9 +45,12 @@ export default async function ScanResultPage({
         <h1 className="font-display text-2xl md:text-3xl font-medium tracking-tightest mb-2 break-all">
           {scan.url}
         </h1>
-        {scan.pageTitle && (
-          <p className="text-ink-soft mb-8">{scan.pageTitle}</p>
-        )}
+        <div className="flex flex-wrap items-center gap-3 mb-8">
+          {scan.pageTitle && (
+            <p className="text-ink-soft">{scan.pageTitle}</p>
+          )}
+          <DeviceBadge device={scan.device ?? "desktop"} />
+        </div>
 
         {/* Score */}
         <ScoreDisplay
@@ -89,5 +92,15 @@ export default async function ScanResultPage({
         <EmailGate scanId={id} />
       </div>
     </main>
+  );
+}
+
+function DeviceBadge({ device }: { device: "desktop" | "mobile" }) {
+  const label = device === "mobile" ? "Mobil · iPhone 14" : "Dator · 1366 × 900";
+  return (
+    <span className="inline-flex items-center gap-2 px-3 py-1 bg-cream-2 border border-line rounded-full text-xs font-mono uppercase tracking-[0.1em] text-ink-soft">
+      <span aria-hidden>{device === "mobile" ? "📱" : "🖥"}</span>
+      {label}
+    </span>
   );
 }

@@ -2,6 +2,8 @@ import { chromium, type Browser } from "playwright";
 import AxeBuilder from "@axe-core/playwright";
 import { calculateScore } from "./score";
 
+export type DeviceType = "desktop" | "mobile";
+
 export interface AxeIssue {
   id: string;
   impact: "critical" | "serious" | "moderate" | "minor" | null;
@@ -18,6 +20,7 @@ export interface AxeIssue {
 
 export interface ScanResult {
   url: string;
+  device: DeviceType;
   scannedAt: string;
   durationMs: number;
   score: number;
@@ -34,12 +37,45 @@ export interface ScanResult {
 
 const SCAN_TIMEOUT_MS = 30_000;
 
+const DEVICE_PROFILES: Record<
+  DeviceType,
+  {
+    userAgent: string;
+    viewport: { width: number; height: number };
+    deviceScaleFactor: number;
+    isMobile: boolean;
+    hasTouch: boolean;
+  }
+> = {
+  desktop: {
+    userAgent:
+      "Mozilla/5.0 (Compatible; A11ySverigeBot/1.0; +https://a11ysverige.se/bot) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    viewport: { width: 1366, height: 900 },
+    deviceScaleFactor: 1,
+    isMobile: false,
+    hasTouch: false,
+  },
+  mobile: {
+    // iPhone 14 emulation. iOS Safari UA so sites serving mobile templates do so.
+    userAgent:
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+    viewport: { width: 390, height: 844 },
+    deviceScaleFactor: 3,
+    isMobile: true,
+    hasTouch: true,
+  },
+};
+
 /**
  * Run a single-page WCAG 2.1 AA scan against the given URL.
  * Throws if the URL can't be reached or the scan times out.
  */
-export async function scanUrl(url: string): Promise<ScanResult> {
+export async function scanUrl(
+  url: string,
+  device: DeviceType = "desktop",
+): Promise<ScanResult> {
   const start = Date.now();
+  const profile = DEVICE_PROFILES[device];
   let browser: Browser | null = null;
 
   try {
@@ -47,13 +83,14 @@ export async function scanUrl(url: string): Promise<ScanResult> {
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     const context = await browser.newContext({
-      userAgent:
-        "Mozilla/5.0 (Compatible; A11ySverigeBot/1.0; +https://a11ysverige.se/bot)",
-      viewport: { width: 1366, height: 900 },
+      userAgent: profile.userAgent,
+      viewport: profile.viewport,
+      deviceScaleFactor: profile.deviceScaleFactor,
+      isMobile: profile.isMobile,
+      hasTouch: profile.hasTouch,
     });
     const page = await context.newPage();
 
-    // Navigate with a hard timeout
     await page.goto(url, {
       waitUntil: "networkidle",
       timeout: SCAN_TIMEOUT_MS,
@@ -61,7 +98,6 @@ export async function scanUrl(url: string): Promise<ScanResult> {
 
     const pageTitle = await page.title().catch(() => null);
 
-    // Run axe-core against WCAG 2.1 AA
     const results = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
       .analyze();
@@ -91,6 +127,7 @@ export async function scanUrl(url: string): Promise<ScanResult> {
 
     return {
       url,
+      device,
       scannedAt: new Date().toISOString(),
       durationMs: Date.now() - start,
       score,
@@ -103,4 +140,3 @@ export async function scanUrl(url: string): Promise<ScanResult> {
     if (browser) await browser.close();
   }
 }
-

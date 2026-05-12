@@ -79,6 +79,14 @@ export default async function ReportPage({
             </div>
           </div>
           <div>
+            <div className="report-meta-label">Enhet</div>
+            <div className="report-meta-value">
+              {scan.device === "mobile"
+                ? "Mobil (iPhone 14)"
+                : "Dator (1366×900)"}
+            </div>
+          </div>
+          <div>
             <div className="report-meta-label">Standard</div>
             <div className="report-meta-value">WCAG 2.1 AA</div>
           </div>

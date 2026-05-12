@@ -23,6 +23,7 @@ export const scanRequestSchema = z.object({
       },
       "Interna domäner kan inte skannas",
     ),
+  device: z.enum(["desktop", "mobile"]).default("desktop"),
 });
 
 export type ScanRequest = z.infer<typeof scanRequestSchema>;
