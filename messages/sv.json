@@ -1,0 +1,40 @@
+{
+  "hero": {
+    "title": "Är din webbplats tillgänglig?",
+    "subtitle": "Skanna din sajt och se var du står mot WCAG 2.1 AA och EU:s tillgänglighetsdirektiv. Gratis. På sekunder.",
+    "cta": "Skanna gratis"
+  },
+  "form": {
+    "placeholder": "https://dinwebbplats.se",
+    "scan": "Skanna",
+    "scanning": "Skannar...",
+    "scanComplete": "Klart!"
+  },
+  "result": {
+    "score": "Tillgänglighetspoäng",
+    "outOf": "av 100",
+    "summary": "Sammanfattning",
+    "issuesFound": "problem hittade",
+    "noIssues": "Inga problem hittade. Snyggt jobbat!",
+    "severity": {
+      "critical": "Kritiska",
+      "serious": "Allvarliga",
+      "moderate": "Måttliga",
+      "minor": "Mindre"
+    },
+    "downloadPdf": "Ladda ner full rapport (PDF)",
+    "whatThisMeans": "Vad betyder detta?"
+  },
+  "emailGate": {
+    "title": "Få hela rapporten",
+    "subtitle": "Vi skickar PDF-rapporten till din inkorg.",
+    "placeholder": "namn@företag.se",
+    "submit": "Skicka rapporten",
+    "consent": "Genom att skicka godkänner du vår integritetspolicy."
+  },
+  "law": {
+    "eaa": "European Accessibility Act gäller från 28 juni 2025.",
+    "wcag": "WCAG 2.1 AA är den europeiska standarden.",
+    "scope": "Påverkar alla företag med 10+ anställda som säljer digitalt till konsumenter."
+  }
+}

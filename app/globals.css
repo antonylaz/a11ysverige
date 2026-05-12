@@ -1,0 +1,350 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --cream: #f5f1e8;
+  --cream-2: #ebe5d4;
+  --paper: #faf7ef;
+  --ink: #1a1f1a;
+  --ink-soft: #4a544a;
+  --ink-mute: #8a8f86;
+  --line: #d8d2c0;
+  --forest: #1f3a2e;
+  --terracotta: #c5552d;
+  --green-leaf: #6b8e5a;
+  --gold: #d4a056;
+  --red-warn: #b04545;
+}
+
+html, body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-manrope), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+@layer base {
+  h1, h2, h3, h4 {
+    font-family: var(--font-fraunces), Georgia, serif;
+    letter-spacing: -0.02em;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Print report (used by /report/[id] and the Playwright PDF export)  */
+/* ------------------------------------------------------------------ */
+
+.report-root {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.report-doc {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 56px 56px 96px;
+  font-family: var(--font-manrope), system-ui, sans-serif;
+  font-size: 11pt;
+  line-height: 1.55;
+}
+
+.report-mark {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: 18pt;
+  color: var(--forest);
+  margin-bottom: 32px;
+}
+.report-mark-dot {
+  color: var(--terracotta);
+  font-style: normal;
+  font-weight: 700;
+}
+
+.report-eyebrow {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 8pt;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-bottom: 12px;
+}
+
+.report-title {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-weight: 500;
+  font-size: 36pt;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  margin: 0 0 40px;
+  color: var(--ink);
+}
+
+.report-url-block {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 16px 0;
+  margin-bottom: 24px;
+}
+.report-meta-label {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 8pt;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-bottom: 6px;
+}
+.report-url {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 11pt;
+  word-break: break-all;
+  color: var(--forest);
+}
+.report-page-title {
+  font-style: italic;
+  color: var(--ink-soft);
+  margin-top: 4px;
+}
+
+.report-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.report-meta-value {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 10pt;
+  color: var(--ink);
+}
+
+.report-score-card {
+  border: 1px solid var(--line);
+  background: var(--cream);
+  padding: 24px;
+  border-radius: 4px;
+  break-inside: avoid;
+}
+.report-score-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.report-score-num {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 72pt;
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+}
+.report-score-suffix {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 20pt;
+  color: var(--ink-mute);
+}
+.report-score-label {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-style: italic;
+  font-size: 16pt;
+  margin-top: 4px;
+}
+.report-score-desc {
+  margin-top: 12px;
+  color: var(--ink-soft);
+}
+.score-good .report-score-num,
+.score-good .report-score-label { color: var(--green-leaf); }
+.score-ok .report-score-num,
+.score-ok .report-score-label { color: var(--gold); }
+.score-bad .report-score-num,
+.score-bad .report-score-label { color: var(--red-warn); }
+
+.report-section {
+  margin-top: 48px;
+  break-inside: avoid-page;
+}
+.report-h2 {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 22pt;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  margin: 0 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+.report-h3 {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 14pt;
+  font-weight: 500;
+  margin: 24px 0 12px;
+  color: var(--forest);
+}
+
+.report-summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+}
+.report-summary-table th,
+.report-summary-table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  font-size: 10pt;
+}
+.report-summary-table th {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 8pt;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  font-weight: 600;
+}
+.report-total-row td {
+  font-weight: 600;
+  border-bottom: none;
+  border-top: 2px solid var(--ink);
+}
+
+.report-note {
+  font-style: italic;
+  color: var(--ink-soft);
+  font-size: 9.5pt;
+  border-left: 2px solid var(--gold);
+  padding-left: 12px;
+  margin-top: 16px;
+}
+
+.report-group {
+  margin-bottom: 24px;
+}
+.report-issue {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+  break-inside: avoid;
+}
+.report-issue-num {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 11pt;
+  color: var(--terracotta);
+  font-weight: 600;
+}
+.report-issue-help {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 13pt;
+  font-weight: 500;
+  margin: 0 0 6px;
+  letter-spacing: -0.01em;
+}
+.report-issue-desc {
+  color: var(--ink-soft);
+  margin: 0 0 12px;
+  font-size: 10pt;
+}
+.report-tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.report-tag {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 7.5pt;
+  letter-spacing: 0.05em;
+  background: var(--cream-2);
+  color: var(--ink-soft);
+  padding: 3px 8px;
+  border-radius: 100px;
+}
+.report-tag-muted {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink-mute);
+}
+.report-node {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 10px 12px;
+  margin-top: 8px;
+}
+.report-node-label {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 7.5pt;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-bottom: 6px;
+}
+.report-node-html {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 8.5pt;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin: 0;
+  color: var(--ink);
+}
+.report-node-fail {
+  margin-top: 6px;
+  font-size: 9pt;
+  color: var(--red-warn);
+  font-style: italic;
+}
+.report-more {
+  font-style: italic;
+  color: var(--ink-mute);
+  font-size: 9pt;
+  margin-top: 8px;
+}
+.report-issue-link {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 8.5pt;
+  color: var(--terracotta);
+  margin-top: 12px;
+  word-break: break-all;
+}
+
+.report-empty {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 24px;
+  text-align: center;
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-style: italic;
+  color: var(--green-leaf);
+}
+
+.report-footer {
+  margin-top: 56px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 8pt;
+  letter-spacing: 0.05em;
+  color: var(--ink-mute);
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+@media print {
+  .report-root {
+    background: white;
+  }
+  .report-doc {
+    padding: 0;
+    max-width: none;
+  }
+  .report-issue,
+  .report-score-card,
+  .report-section {
+    break-inside: avoid;
+  }
+}
+
