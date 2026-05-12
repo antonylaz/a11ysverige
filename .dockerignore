@@ -1,0 +1,14 @@
+node_modules
+.next
+.git
+.env*
+!.env.example
+.vercel
+docs
+README.md
+*.log
+.DS_Store
+/playwright-report
+/playwright/.cache
+*.tsbuildinfo
+next-env.d.ts
