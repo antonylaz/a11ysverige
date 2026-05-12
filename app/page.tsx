@@ -129,21 +129,21 @@ function ReportPreview() {
   return (
     <section className="border-t border-line bg-paper">
       <div className="max-w-6xl mx-auto px-6 py-20 md:py-24">
-        <div className="text-xs uppercase tracking-[0.2em] text-ink-mute font-mono mb-3">
+        <div className="text-xs uppercase tracking-[0.2em] text-ink-mute font-mono mb-3 text-center">
           — Så ser rapporten ut
         </div>
-        <h2 className="font-display text-3xl md:text-5xl font-medium tracking-tightest mb-4 max-w-3xl">
+        <h2 className="font-display text-3xl md:text-5xl font-medium tracking-tightest mb-4 max-w-3xl mx-auto text-center">
           Konkreta problem. Tydlig prioritering.{" "}
           <em className="italic text-forest font-normal">På svenska.</em>
         </h2>
-        <p className="text-ink-soft max-w-2xl mb-12 leading-relaxed">
+        <p className="text-ink-soft max-w-2xl mx-auto text-center mb-12 leading-relaxed">
           Varje problem förklaras för en utvecklare och en chef — vad det är,
           vem det påverkar och hur du åtgärdar det. Med WCAG-referenser och
           poäng som mäter framsteg.
         </p>
 
         {/* Mock report card */}
-        <div className="relative max-w-4xl">
+        <div className="relative max-w-4xl mx-auto">
           <div className="absolute -top-3 left-6 z-10 bg-terracotta text-cream font-mono text-[10px] uppercase tracking-[0.15em] px-3 py-1 rounded">
             Förhandsvisning
           </div>

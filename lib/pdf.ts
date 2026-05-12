@@ -1,4 +1,6 @@
 import { chromium, type Browser } from "playwright";
+import { CHROMIUM_LAUNCH_ARGS } from "./scanner";
+import { withPlaywrightSlot } from "./playwright-queue";
 
 export interface PdfOptions {
   scanId: string;
@@ -10,9 +12,14 @@ const PDF_TIMEOUT_MS = 45_000;
 
 /**
  * Render /report/[id] to a PDF buffer using a headless Chromium.
- * The page must be reachable at `${baseUrl}/report/${scanId}`.
+ * Shares the single Playwright slot with the scanner so the two never run
+ * concurrently and OOM the Render Free dyno.
  */
 export async function generateScanPdf(options: PdfOptions): Promise<Buffer> {
+  return withPlaywrightSlot(() => generateScanPdfInner(options));
+}
+
+async function generateScanPdfInner(options: PdfOptions): Promise<Buffer> {
   const baseUrl =
     options.baseUrl ??
     process.env.NEXT_PUBLIC_SITE_URL ??
@@ -21,9 +28,7 @@ export async function generateScanPdf(options: PdfOptions): Promise<Buffer> {
 
   let browser: Browser | null = null;
   try {
-    browser = await chromium.launch({
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    });
+    browser = await chromium.launch({ args: CHROMIUM_LAUNCH_ARGS });
     const context = await browser.newContext();
     const page = await context.newPage();
 

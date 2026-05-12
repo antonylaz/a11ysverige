@@ -1,38 +1,11 @@
 import { chromium, type Browser } from "playwright";
 import AxeBuilder from "@axe-core/playwright";
 import { calculateScore } from "./score";
+import { withPlaywrightSlot } from "./playwright-queue";
 
 export type DeviceType = "desktop" | "mobile";
 
-/**
- * Serialize Playwright launches so we don't spike memory on Render's 512 MB
- * Free tier. Each scan uses ~350-450 MB; running two in parallel OOM-kills
- * the dyno. Single-process queue keeps memory bounded; queued requests
- * simply wait their turn.
- */
-const scanQueue: Array<() => void> = [];
-let scanInFlight = false;
-
-async function acquireScanSlot(): Promise<() => void> {
-  if (!scanInFlight) {
-    scanInFlight = true;
-    return () => releaseScanSlot();
-  }
-  return new Promise<() => void>((resolve) => {
-    scanQueue.push(() => {
-      scanInFlight = true;
-      resolve(() => releaseScanSlot());
-    });
-  });
-}
-
-function releaseScanSlot() {
-  scanInFlight = false;
-  const next = scanQueue.shift();
-  if (next) next();
-}
-
-const CHROMIUM_LAUNCH_ARGS = [
+export const CHROMIUM_LAUNCH_ARGS = [
   "--no-sandbox",
   "--disable-setuid-sandbox",
   // Memory: skip GPU, dev/shm, and background timers we don't need
@@ -120,7 +93,13 @@ export async function scanUrl(
   url: string,
   device: DeviceType = "desktop",
 ): Promise<ScanResult> {
-  const release = await acquireScanSlot();
+  return withPlaywrightSlot(() => scanUrlInner(url, device));
+}
+
+async function scanUrlInner(
+  url: string,
+  device: DeviceType,
+): Promise<ScanResult> {
   const start = Date.now();
   const profile = DEVICE_PROFILES[device];
   let browser: Browser | null = null;
@@ -187,6 +166,5 @@ export async function scanUrl(
     };
   } finally {
     if (browser) await browser.close();
-    release();
   }
 }
