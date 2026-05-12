@@ -30,7 +30,7 @@ export default async function ScanResultPage({
           </Link>
           <Link
             href="/"
-            className="text-xs uppercase tracking-[0.1em] font-semibold text-ink-soft hover:text-terracotta"
+            className="inline-block py-3 -my-3 text-xs uppercase tracking-[0.1em] font-semibold text-ink-soft hover:text-terracotta"
           >
             ← Skanna en ny sida
           </Link>

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getScan } from "@/lib/kv";
 import { scoreTier } from "@/lib/score";
+import { getIssueCopy } from "@/lib/issue-copy";
 import type { AxeIssue } from "@/lib/scanner";
 
 export const dynamic = "force-dynamic";
@@ -160,54 +161,82 @@ export default async function ReportPage({
               <h3 className="report-h3">
                 {IMPACT_LABELS[group.impact]} ({group.issues.length})
               </h3>
-              {group.issues.map((issue, idx) => (
-                <article key={issue.id} className="report-issue">
-                  <div className="report-issue-num">
-                    {String(idx + 1).padStart(2, "0")}
-                  </div>
-                  <div className="report-issue-body">
-                    <h4 className="report-issue-help">{issue.help}</h4>
-                    <p className="report-issue-desc">{issue.description}</p>
-
-                    <div className="report-tag-row">
-                      {issue.tags
-                        .filter((t) => t.startsWith("wcag"))
-                        .map((t) => (
-                          <span key={t} className="report-tag">
-                            {t}
-                          </span>
-                        ))}
-                      <span className="report-tag report-tag-muted">
-                        {issue.nodes.length} förekomst
-                        {issue.nodes.length === 1 ? "" : "er"}
-                      </span>
+              {group.issues.map((issue, idx) => {
+                const copy = getIssueCopy(issue.id);
+                const title = copy?.title ?? issue.help;
+                return (
+                  <article key={issue.id} className="report-issue">
+                    <div className="report-issue-num">
+                      {String(idx + 1).padStart(2, "0")}
                     </div>
+                    <div className="report-issue-body">
+                      <h4 className="report-issue-help">{title}</h4>
 
-                    {issue.nodes.slice(0, 2).map((node, nidx) => (
-                      <div key={nidx} className="report-node">
-                        <div className="report-node-label">
-                          Berört element {nidx + 1}
+                      {copy ? (
+                        <div className="report-copy-stack">
+                          <div className="report-copy-block">
+                            <div className="report-copy-label">Vad betyder detta?</div>
+                            <p>{copy.plain}</p>
+                          </div>
+                          <div className="report-copy-block">
+                            <div className="report-copy-label">Vem påverkas?</div>
+                            <p>{copy.why}</p>
+                          </div>
+                          <div className="report-copy-block">
+                            <div className="report-copy-label">Så åtgärdar du</div>
+                            <p>{copy.fix}</p>
+                          </div>
                         </div>
-                        <pre className="report-node-html">{node.html}</pre>
-                        {node.failureSummary && (
-                          <p className="report-node-fail">
-                            {node.failureSummary}
+                      ) : (
+                        <>
+                          <p className="report-issue-desc">{issue.description}</p>
+                          <p className="report-issue-en-note">
+                            (Engelsk beskrivning från axe-core — svensk text
+                            saknas för denna regel.)
                           </p>
-                        )}
-                      </div>
-                    ))}
-                    {issue.nodes.length > 2 && (
-                      <p className="report-more">
-                        + {issue.nodes.length - 2} fler förekomster
-                      </p>
-                    )}
+                        </>
+                      )}
 
-                    <p className="report-issue-link">
-                      Mer information: {issue.helpUrl}
-                    </p>
-                  </div>
-                </article>
-              ))}
+                      <div className="report-tag-row">
+                        {issue.tags
+                          .filter((t) => t.startsWith("wcag"))
+                          .map((t) => (
+                            <span key={t} className="report-tag">
+                              {t}
+                            </span>
+                          ))}
+                        <span className="report-tag report-tag-muted">
+                          {issue.nodes.length} förekomst
+                          {issue.nodes.length === 1 ? "" : "er"}
+                        </span>
+                      </div>
+
+                      {issue.nodes.slice(0, 2).map((node, nidx) => (
+                        <div key={nidx} className="report-node">
+                          <div className="report-node-label">
+                            Berört element {nidx + 1}
+                          </div>
+                          <pre className="report-node-html">{node.html}</pre>
+                          {node.failureSummary && (
+                            <p className="report-node-fail">
+                              {node.failureSummary}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                      {issue.nodes.length > 2 && (
+                        <p className="report-more">
+                          + {issue.nodes.length - 2} fler förekomster
+                        </p>
+                      )}
+
+                      <p className="report-issue-link">
+                        Teknisk dokumentation: {issue.helpUrl}
+                      </p>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           ))
         )}

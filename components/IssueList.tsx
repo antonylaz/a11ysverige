@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { AxeIssue } from "@/lib/scanner";
+import { getIssueCopy } from "@/lib/issue-copy";
 
 const IMPACT_LABELS: Record<NonNullable<AxeIssue["impact"]>, string> = {
   critical: "Kritisk",
@@ -47,6 +48,9 @@ export function IssueList({ issues }: { issues: AxeIssue[] }) {
 
 function IssueRow({ issue }: { issue: AxeIssue }) {
   const [open, setOpen] = useState(false);
+  const copy = getIssueCopy(issue.id);
+  const title = copy?.title ?? issue.help;
+
   return (
     <details
       className="bg-paper border border-line rounded group"
@@ -55,7 +59,7 @@ function IssueRow({ issue }: { issue: AxeIssue }) {
     >
       <summary className="cursor-pointer px-5 py-4 list-none flex items-start justify-between gap-4 hover:bg-cream/40">
         <div>
-          <div className="font-semibold text-ink mb-1">{issue.help}</div>
+          <div className="font-semibold text-ink mb-1">{title}</div>
           <div className="text-sm text-ink-soft">
             {issue.nodes.length}{" "}
             {issue.nodes.length === 1 ? "förekomst" : "förekomster"} på sidan
@@ -65,12 +69,43 @@ function IssueRow({ issue }: { issue: AxeIssue }) {
           ⌄
         </span>
       </summary>
-      <div className="border-t border-line px-5 py-4 space-y-4">
-        <p className="text-sm text-ink-soft">{issue.description}</p>
+      <div className="border-t border-line px-5 py-4 space-y-5">
+        {copy ? (
+          <>
+            <div>
+              <div className="text-xs uppercase tracking-[0.1em] text-ink-mute font-mono font-semibold mb-2">
+                — Vad betyder detta?
+              </div>
+              <p className="text-sm text-ink-soft leading-relaxed">{copy.plain}</p>
+            </div>
+            <div>
+              <div className="text-xs uppercase tracking-[0.1em] text-ink-mute font-mono font-semibold mb-2">
+                — Vem påverkas?
+              </div>
+              <p className="text-sm text-ink-soft leading-relaxed">{copy.why}</p>
+            </div>
+            <div>
+              <div className="text-xs uppercase tracking-[0.1em] text-ink-mute font-mono font-semibold mb-2">
+                — Så åtgärdar du
+              </div>
+              <p className="text-sm text-ink-soft leading-relaxed">{copy.fix}</p>
+            </div>
+          </>
+        ) : (
+          <div>
+            <div className="text-xs uppercase tracking-[0.1em] text-ink-mute font-mono font-semibold mb-2">
+              — Beskrivning
+            </div>
+            <p className="text-sm text-ink-soft leading-relaxed">{issue.description}</p>
+            <p className="text-xs text-ink-mute italic mt-2">
+              (Engelsk beskrivning från axe-core — svensk text saknas ännu för denna regel.)
+            </p>
+          </div>
+        )}
 
         <div>
-          <div className="text-xs uppercase tracking-[0.1em] text-ink-mute font-semibold mb-2">
-            WCAG-taggar
+          <div className="text-xs uppercase tracking-[0.1em] text-ink-mute font-mono font-semibold mb-2">
+            — WCAG-taggar
           </div>
           <div className="flex flex-wrap gap-2">
             {issue.tags
@@ -87,8 +122,8 @@ function IssueRow({ issue }: { issue: AxeIssue }) {
         </div>
 
         <div>
-          <div className="text-xs uppercase tracking-[0.1em] text-ink-mute font-semibold mb-2">
-            Exempel på berörda element
+          <div className="text-xs uppercase tracking-[0.1em] text-ink-mute font-mono font-semibold mb-2">
+            — Exempel på berörda element
           </div>
           <ul className="space-y-2">
             {issue.nodes.slice(0, 3).map((node, idx) => (
@@ -110,9 +145,9 @@ function IssueRow({ issue }: { issue: AxeIssue }) {
           href={issue.helpUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-block text-sm text-terracotta hover:text-ink underline"
+          className="inline-block py-2 text-sm text-terracotta hover:text-ink underline"
         >
-          Läs mer hos Deque →
+          Teknisk dokumentation hos Deque →
         </a>
       </div>
     </details>

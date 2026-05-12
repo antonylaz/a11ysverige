@@ -93,9 +93,10 @@ export default function Home() {
             <h4 className="text-xs uppercase tracking-[0.15em] text-gold mb-3">
               Mer
             </h4>
-            <ul className="space-y-2 text-cream/85">
-              <li><a href="/integritetspolicy" className="hover:text-cream">Integritetspolicy</a></li>
-              <li><a href="/kontakt" className="hover:text-cream">Kontakt</a></li>
+            <ul className="space-y-1 text-cream/85">
+              <li><a href="/integritetspolicy" className="inline-block py-2 -my-1 hover:text-cream">Integritetspolicy</a></li>
+              <li><a href="/cookies" className="inline-block py-2 -my-1 hover:text-cream">Cookies</a></li>
+              <li><a href="/kontakt" className="inline-block py-2 -my-1 hover:text-cream">Kontakt</a></li>
             </ul>
           </div>
           <div className="text-cream/60 text-xs">

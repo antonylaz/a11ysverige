@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function Cookies() {
   return (
     <main className="max-w-3xl mx-auto px-6 py-20">
-      <a href="/" className="text-sm text-ink-soft hover:text-terracotta">
+      <a href="/" className="inline-block py-3 -my-3 text-sm text-ink-soft hover:text-terracotta">
         ← Tillbaka
       </a>
       <h1 className="font-display text-5xl font-medium tracking-tightest mt-8 mb-8">

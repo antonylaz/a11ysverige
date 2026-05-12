@@ -246,6 +246,33 @@ html, body {
   margin: 0 0 12px;
   font-size: 10pt;
 }
+.report-copy-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 8px 0 12px;
+}
+.report-copy-block p {
+  margin: 0;
+  font-size: 10pt;
+  color: var(--ink-soft);
+  line-height: 1.55;
+}
+.report-copy-label {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 7.5pt;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--terracotta);
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+.report-issue-en-note {
+  font-style: italic;
+  font-size: 9pt;
+  color: var(--ink-mute);
+  margin: -8px 0 12px;
+}
 .report-tag-row {
   display: flex;
   flex-wrap: wrap;
@@ -331,6 +358,35 @@ html, body {
   display: flex;
   justify-content: space-between;
   gap: 16px;
+}
+
+@media (max-width: 800px) {
+  .report-doc {
+    padding: 24px 16px 56px;
+    font-size: 10.5pt;
+  }
+  .report-title {
+    font-size: 28pt;
+  }
+  .report-h2 {
+    font-size: 18pt;
+  }
+  .report-meta-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .report-score-num {
+    font-size: 56pt;
+  }
+  .report-issue {
+    grid-template-columns: 36px 1fr;
+    gap: 12px;
+  }
+  .report-summary-table th,
+  .report-summary-table td {
+    padding: 8px 8px;
+    font-size: 9.5pt;
+  }
 }
 
 @media print {

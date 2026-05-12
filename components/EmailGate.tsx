@@ -91,14 +91,14 @@ export function EmailGate({ scanId }: { scanId: string }) {
         </button>
       </div>
 
-      <label className="mt-5 flex items-start gap-3 text-sm text-cream/85 max-w-2xl cursor-pointer">
+      <label className="mt-5 flex items-start gap-3 text-sm text-cream/85 max-w-2xl cursor-pointer py-2 -my-2">
         <input
           type="checkbox"
           required
           checked={consent}
           onChange={(e) => setConsent(e.target.checked)}
           disabled={status === "submitting"}
-          className="mt-1 h-4 w-4 accent-terracotta"
+          className="mt-1 h-5 w-5 accent-terracotta shrink-0"
         />
         <span>
           Jag godkänner att A11ySverige sparar min e-postadress för att leverera
