@@ -4,6 +4,51 @@ import { calculateScore } from "./score";
 
 export type DeviceType = "desktop" | "mobile";
 
+/**
+ * Serialize Playwright launches so we don't spike memory on Render's 512 MB
+ * Free tier. Each scan uses ~350-450 MB; running two in parallel OOM-kills
+ * the dyno. Single-process queue keeps memory bounded; queued requests
+ * simply wait their turn.
+ */
+const scanQueue: Array<() => void> = [];
+let scanInFlight = false;
+
+async function acquireScanSlot(): Promise<() => void> {
+  if (!scanInFlight) {
+    scanInFlight = true;
+    return () => releaseScanSlot();
+  }
+  return new Promise<() => void>((resolve) => {
+    scanQueue.push(() => {
+      scanInFlight = true;
+      resolve(() => releaseScanSlot());
+    });
+  });
+}
+
+function releaseScanSlot() {
+  scanInFlight = false;
+  const next = scanQueue.shift();
+  if (next) next();
+}
+
+const CHROMIUM_LAUNCH_ARGS = [
+  "--no-sandbox",
+  "--disable-setuid-sandbox",
+  // Memory: skip GPU, dev/shm, and background timers we don't need
+  "--disable-gpu",
+  "--disable-dev-shm-usage",
+  "--disable-software-rasterizer",
+  "--disable-background-networking",
+  "--disable-background-timer-throttling",
+  "--disable-renderer-backgrounding",
+  "--disable-features=TranslateUI,site-per-process",
+  "--disable-extensions",
+  "--mute-audio",
+  "--no-first-run",
+  "--no-default-browser-check",
+];
+
 export interface AxeIssue {
   id: string;
   impact: "critical" | "serious" | "moderate" | "minor" | null;
@@ -75,14 +120,13 @@ export async function scanUrl(
   url: string,
   device: DeviceType = "desktop",
 ): Promise<ScanResult> {
+  const release = await acquireScanSlot();
   const start = Date.now();
   const profile = DEVICE_PROFILES[device];
   let browser: Browser | null = null;
 
   try {
-    browser = await chromium.launch({
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    });
+    browser = await chromium.launch({ args: CHROMIUM_LAUNCH_ARGS });
     const context = await browser.newContext({
       userAgent: profile.userAgent,
       viewport: profile.viewport,
@@ -143,5 +187,6 @@ export async function scanUrl(
     };
   } finally {
     if (browser) await browser.close();
+    release();
   }
 }
