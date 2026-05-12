@@ -1,6 +1,9 @@
 # Playwright's official image: Node 20 + Chromium + all OS deps preinstalled.
-# Pin to the same Playwright minor we depend on in package.json.
-FROM mcr.microsoft.com/playwright:v1.49.0-jammy
+# Image version must match the playwright npm package's installed version
+# (see node_modules/playwright/package.json). Mismatch causes runtime
+# "Executable doesn't exist" because the npm package looks for a browser
+# revision the image doesn't have.
+FROM mcr.microsoft.com/playwright:v1.60.0-jammy
 
 WORKDIR /app
 
