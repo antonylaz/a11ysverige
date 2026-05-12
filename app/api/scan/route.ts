@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { nanoid } from "nanoid";
 import { scanUrl } from "@/lib/scanner";
 import { saveScan } from "@/lib/kv";
-import { scanRequestSchema } from "@/lib/validators";
+import {
+  scanRequestSchema,
+  detectUrlIntent,
+  deviceMismatchError,
+} from "@/lib/validators";
 import { scanRateLimit, getClientIp } from "@/lib/rate-limit";
 
 // Playwright needs Node runtime, not Edge
@@ -43,6 +47,16 @@ export async function POST(req: NextRequest) {
       { error: parsed.error.issues[0]?.message ?? "Ogiltig begäran" },
       { status: 400 },
     );
+  }
+
+  // Cross-field: URL's intent vs selected device.
+  // E.g. m.facebook.com selected as Desktop, or desktop.example.com as Mobile.
+  const mismatch = deviceMismatchError(
+    detectUrlIntent(parsed.data.url),
+    parsed.data.device,
+  );
+  if (mismatch) {
+    return NextResponse.json({ error: mismatch }, { status: 400 });
   }
 
   // Run the scan
