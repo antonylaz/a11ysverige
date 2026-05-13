@@ -1,6 +1,15 @@
 import { ScanForm } from "@/components/ScanForm";
+import { getStats, type ScanStats } from "@/lib/stats";
 
-export default function Home() {
+// Always render fresh — the live counter would be misleading if cached.
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const stats = await getStats().catch((): ScanStats => ({
+    total: 0,
+    week: 0,
+    lastAt: null,
+  }));
   return (
     <main className="min-h-screen">
       {/* Hero */}
@@ -32,6 +41,9 @@ export default function Home() {
           Inga konton. Ingen kreditkortsuppgift. Resultatet på 20 sekunder.
         </p>
       </section>
+
+      {/* Live scan counter */}
+      <ScanCounter stats={stats} />
 
       {/* Report preview */}
       <ReportPreview />
@@ -112,6 +124,61 @@ export default function Home() {
       </footer>
     </main>
   );
+}
+
+function ScanCounter({ stats }: { stats: ScanStats }) {
+  const hasAnyScans = stats.total > 0;
+  return (
+    <section className="border-t border-b border-line bg-cream-2/40">
+      <div className="max-w-6xl mx-auto px-6 py-5 text-center">
+        <p className="inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-1 font-mono text-[11px] md:text-xs uppercase tracking-[0.15em] text-ink-soft">
+          <span className="inline-flex items-center gap-2">
+            <span className="relative inline-block w-2 h-2">
+              <span className="absolute inset-0 rounded-full bg-green-leaf" />
+              <span className="absolute inset-0 rounded-full bg-green-leaf animate-ping opacity-60" />
+            </span>
+            {hasAnyScans ? (
+              <>
+                <strong className="text-ink font-bold">
+                  {stats.total.toLocaleString("sv-SE")}
+                </strong>{" "}
+                skanningar totalt
+              </>
+            ) : (
+              <span>Var den första att skanna en sajt</span>
+            )}
+          </span>
+          {stats.week > 0 && (
+            <>
+              <span className="text-ink-mute" aria-hidden>·</span>
+              <span>
+                <strong className="text-ink font-bold">{stats.week}</strong>{" "}
+                denna vecka
+              </span>
+            </>
+          )}
+          {stats.lastAt && (
+            <>
+              <span className="text-ink-mute" aria-hidden>·</span>
+              <span>senast {formatRelative(stats.lastAt)}</span>
+            </>
+          )}
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function formatRelative(ms: number): string {
+  const diffSec = Math.max(0, Math.floor((Date.now() - ms) / 1000));
+  if (diffSec < 60) return `${diffSec}s sedan`;
+  const min = Math.floor(diffSec / 60);
+  if (min < 60) return `${min} min sedan`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `${hr}h sedan`;
+  const day = Math.floor(hr / 24);
+  if (day < 7) return `${day}d sedan`;
+  return new Date(ms).toLocaleDateString("sv-SE");
 }
 
 function Step({ num, title, body }: { num: string; title: string; body: string }) {

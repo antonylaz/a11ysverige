@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { nanoid } from "nanoid";
 import { scanUrl } from "@/lib/scanner";
 import { saveScan } from "@/lib/kv";
+import { recordScan } from "@/lib/stats";
 import {
   scanRequestSchema,
   detectUrlIntent,
@@ -64,6 +65,8 @@ export async function POST(req: NextRequest) {
     const result = await scanUrl(parsed.data.url, parsed.data.device);
     const id = nanoid(10);
     await saveScan(id, result);
+    // Non-blocking — don't fail the scan if stats write hiccups.
+    recordScan().catch((e) => console.error("[stats] recordScan:", e));
     return NextResponse.json({
       id,
       device: result.device,
