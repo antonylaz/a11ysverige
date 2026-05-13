@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { Spinner } from "./Spinner";
 
 type Device = "desktop" | "mobile";
 
@@ -102,22 +103,33 @@ export function CompareForm() {
         <button
           type="submit"
           disabled={busy || urlA.length < 3 || urlB.length < 3}
-          className="px-8 py-4 bg-terracotta text-cream font-semibold text-sm uppercase tracking-[0.1em] rounded hover:bg-ink transition disabled:bg-ink-mute disabled:cursor-not-allowed"
+          className="px-8 py-4 bg-terracotta text-cream font-semibold text-sm uppercase tracking-[0.1em] rounded hover:bg-ink transition disabled:bg-ink-mute disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
         >
+          {busy && <Spinner size={14} />}
           {busy ? "Skannar..." : "Jämför"}
         </button>
       </div>
 
       {busy && (
-        <p
-          className="mt-4 text-sm text-ink-soft text-center"
+        <div
+          className="mt-5 mx-auto max-w-xl bg-paper border border-line rounded p-4 flex items-center gap-3 justify-center"
           aria-live="polite"
         >
-          {status === "scanning-a"
-            ? "Skannar första webbplatsen..."
-            : "Skannar andra webbplatsen..."}{" "}
-          (Skannas en i taget för att skona Renders gratis-instans.)
-        </p>
+          <Spinner size={20} className="text-terracotta shrink-0" />
+          <div className="text-left text-sm">
+            <div className="font-mono text-[10px] uppercase tracking-[0.15em] text-ink mb-0.5">
+              {status === "scanning-a" ? "1 / 2" : "2 / 2"}
+            </div>
+            <p className="text-ink-soft">
+              {status === "scanning-a"
+                ? "Skannar första webbplatsen..."
+                : "Skannar andra webbplatsen..."}{" "}
+              <span className="text-ink-mute italic">
+                (en i taget — räkna med 1–2 min totalt)
+              </span>
+            </p>
+          </div>
+        </div>
       )}
       {error && (
         <p className="mt-4 text-sm text-red-warn text-center" role="alert">

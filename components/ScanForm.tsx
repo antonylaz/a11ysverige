@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { Spinner } from "./Spinner";
 
 type Device = "desktop" | "mobile";
 
@@ -59,8 +60,9 @@ export function ScanForm() {
         <button
           type="submit"
           disabled={loading || url.length < 3}
-          className="px-8 py-4 bg-terracotta text-cream font-semibold text-sm uppercase tracking-[0.1em] rounded hover:bg-ink transition disabled:bg-ink-mute disabled:cursor-not-allowed"
+          className="px-8 py-4 bg-terracotta text-cream font-semibold text-sm uppercase tracking-[0.1em] rounded hover:bg-ink transition disabled:bg-ink-mute disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
         >
+          {loading && <Spinner size={14} />}
           {loading ? "Skannar..." : "Skanna gratis"}
         </button>
       </div>
@@ -92,11 +94,22 @@ export function ScanForm() {
         </p>
       )}
       {loading && (
-        <p className="mt-3 text-sm text-ink-soft" aria-live="polite">
-          {device === "mobile"
-            ? "Renderar sidan i mobilvy och kör WCAG-tester — det här tar runt 20 sekunder..."
-            : "Renderar sidan och kör WCAG-tester — det här tar runt 20 sekunder..."}
-        </p>
+        <div
+          className="mt-5 mx-auto max-w-xl bg-paper border border-line rounded p-4 flex items-start gap-3"
+          aria-live="polite"
+        >
+          <Spinner size={20} className="text-terracotta shrink-0 mt-0.5" />
+          <div className="text-left text-sm">
+            <div className="font-mono text-[10px] uppercase tracking-[0.15em] text-ink mb-0.5">
+              Skannar
+            </div>
+            <p className="text-ink-soft">
+              {device === "mobile"
+                ? "Renderar sidan i mobilvy och kör WCAG-tester. Räkna med 30–60 sekunder."
+                : "Renderar sidan och kör WCAG-tester. Räkna med 30–60 sekunder."}
+            </p>
+          </div>
+        </div>
       )}
     </form>
   );

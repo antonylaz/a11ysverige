@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, FormEvent } from "react";
+import { Spinner } from "./Spinner";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -85,8 +86,9 @@ export function EmailGate({ scanId }: { scanId: string }) {
         <button
           type="submit"
           disabled={status === "submitting" || !consent || email.length < 3}
-          className="px-8 py-4 bg-terracotta text-cream font-semibold text-sm uppercase tracking-[0.1em] rounded hover:bg-gold hover:text-ink transition disabled:bg-ink-mute disabled:cursor-not-allowed"
+          className="px-8 py-4 bg-terracotta text-cream font-semibold text-sm uppercase tracking-[0.1em] rounded hover:bg-gold hover:text-ink transition disabled:bg-ink-mute disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
         >
+          {status === "submitting" && <Spinner size={14} />}
           {status === "submitting" ? "Skickar..." : "Skicka rapporten"}
         </button>
       </div>
