@@ -9,7 +9,10 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: ["/"],
-        disallow: ["/api/", "/scan/", "/report/"],
+        // /api and /report (PDF source) stay disallowed.
+        // /scan/* is now allowed so social crawlers (LinkedIn, Slack,
+        // Twitter) can read the OG image when someone shares a scan URL.
+        disallow: ["/api/", "/report/"],
       },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,

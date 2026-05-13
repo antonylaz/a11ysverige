@@ -5,11 +5,45 @@ import { getScan } from "@/lib/kv";
 import { ScoreDisplay } from "@/components/ScoreDisplay";
 import { IssueList } from "@/components/IssueList";
 import { EmailGate } from "@/components/EmailGate";
+import { ShareButtons } from "@/components/ShareButtons";
 
-export const metadata: Metadata = {
-  title: "Skanningsresultat — A11ySverige",
-  robots: { index: false, follow: false },
-};
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://a11ysverige.onrender.com";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const scan = await getScan(id);
+  const title = scan
+    ? `${scan.score}/100 · ${new URL(scan.url).hostname.replace(/^www\./, "")}`
+    : "Skanningsresultat";
+  const description = scan
+    ? `${scan.totalIssues} WCAG 2.1 AA-problem hittade på ${scan.url}. Klicka för full rapport.`
+    : "Tillgänglighetsrapport från A11ySverige.";
+  return {
+    title: `${title} — A11ySverige`,
+    description,
+    // Allow indexing of result pages now that they have rich OG cards;
+    // each scan is its own shareable artefact.
+    robots: { index: true, follow: true },
+    openGraph: {
+      type: "article",
+      url: `${SITE_URL}/scan/${id}`,
+      title,
+      description,
+      siteName: "A11ySverige",
+      locale: "sv_SE",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  };
+}
 
 export default async function ScanResultPage({
   params,
@@ -88,6 +122,8 @@ export default async function ScanResultPage({
             <IssueList issues={scan.issues} />
           )}
         </div>
+
+        <ShareButtons scanId={id} score={scan.score} siteUrl={SITE_URL} />
 
         <EmailGate scanId={id} />
       </div>

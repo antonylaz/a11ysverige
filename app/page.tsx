@@ -1,15 +1,16 @@
+import Link from "next/link";
 import { ScanForm } from "@/components/ScanForm";
 import { getStats, type ScanStats } from "@/lib/stats";
+import { getRecentScans, type RecentScanEntry } from "@/lib/kv";
 
 // Always render fresh — the live counter would be misleading if cached.
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const stats = await getStats().catch((): ScanStats => ({
-    total: 0,
-    week: 0,
-    lastAt: null,
-  }));
+  const [stats, recent] = await Promise.all([
+    getStats().catch((): ScanStats => ({ total: 0, week: 0, lastAt: null })),
+    getRecentScans(8).catch((): RecentScanEntry[] => []),
+  ]);
   return (
     <main className="min-h-screen">
       {/* Hero */}
@@ -39,6 +40,14 @@ export default async function Home() {
 
         <p className="mt-6 text-sm text-ink-mute">
           Inga konton. Ingen kreditkortsuppgift. Resultatet på 20 sekunder.
+        </p>
+        <p className="mt-2 text-sm">
+          <Link
+            href="/jamfor"
+            className="inline-block py-2 -my-2 text-terracotta hover:text-ink font-semibold uppercase tracking-[0.1em] text-xs font-mono"
+          >
+            eller jämför två sidor sida vid sida →
+          </Link>
         </p>
       </section>
 
@@ -97,6 +106,9 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* Recent public scans */}
+      {recent.length > 0 && <RecentScans recent={recent} />}
+
       <footer className="border-t border-line bg-ink text-cream">
         <div className="max-w-6xl mx-auto px-6 py-12 grid md:grid-cols-3 gap-8 text-sm">
           <div>
@@ -123,6 +135,65 @@ export default async function Home() {
         </div>
       </footer>
     </main>
+  );
+}
+
+function RecentScans({ recent }: { recent: RecentScanEntry[] }) {
+  return (
+    <section className="border-t border-line bg-paper">
+      <div className="max-w-6xl mx-auto px-6 py-16">
+        <div className="text-xs uppercase tracking-[0.2em] text-ink-mute font-mono mb-3 text-center">
+          — Senaste publika skanningar
+        </div>
+        <h2 className="font-display text-2xl md:text-3xl font-medium tracking-tightest text-center mb-10">
+          Vad andra just har skannat
+        </h2>
+        <ul className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {recent.map((r) => (
+            <li key={r.id}>
+              <Link
+                href={`/scan/${r.id}`}
+                className="block bg-cream border border-line rounded p-4 hover:bg-cream-2/60 transition"
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <span
+                    className={`w-2 h-2 rounded-full ${
+                      r.score >= 80
+                        ? "bg-green-leaf"
+                        : r.score >= 50
+                          ? "bg-gold"
+                          : "bg-red-warn"
+                    }`}
+                  />
+                  <span className="text-[10px] uppercase tracking-[0.1em] text-ink-mute font-mono">
+                    {r.device === "mobile" ? "Mobil" : "Dator"}
+                  </span>
+                </div>
+                <div className="font-mono text-sm text-ink break-all line-clamp-1">
+                  {r.hostname}
+                </div>
+                <div className="mt-2 flex items-baseline gap-1">
+                  <span
+                    className={`font-display text-2xl font-medium ${
+                      r.score >= 80
+                        ? "text-green-leaf"
+                        : r.score >= 50
+                          ? "text-gold"
+                          : "text-red-warn"
+                    }`}
+                  >
+                    {r.score}
+                  </span>
+                  <span className="text-xs text-ink-mute font-mono">
+                    / 100
+                  </span>
+                </div>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
   );
 }
 
